@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Webhook Messenger</title>
+    <style>
+        body { font-family: sans-serif; }
+        #messageForm { display: flex; }
+        #messageInput { flex-grow: 1; padding: 0.5em; }
+        #sendMessage { padding: 0.5em; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Discord Messenger</h1>
+    <div id="messageDisplay">
+        <!-- Messages will be displayed here -->
+    </div>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Enter your message">
+        <button type="button" id="sendMessage">Send</button>
+    </form>
+
+    <script>
+        const webhookUrl = "YOUR_DISCORD_WEBHOOK_URL_HERE"; // Replace with your webhook URL
+        const sendMessageButton = document.getElementById("sendMessage");
+        const messageInput = document.getElementById("messageInput");
+        const messageDisplay = document.getElementById("messageDisplay");
+
+
+        sendMessageButton.addEventListener("click", () => {
+            const message = messageInput.value;
+            if (message.trim() !== "") {
+                fetch(webhookUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ content: message })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    messageInput.value = ""; // Clear input field
+                    // Add message to display (you'd likely want more sophisticated display logic)
+                    const newMessage = document.createElement("p");
+                    newMessage.textContent = "You: " + message;
+                    messageDisplay.appendChild(newMessage);
+                })
+                .catch(error => {
+                    console.error("Error sending message:", error);
+                    //Display error to the user
+                    alert("Error sending message. Please check your webhook URL.");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
